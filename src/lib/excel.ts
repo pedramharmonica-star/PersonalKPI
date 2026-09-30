@@ -1,14 +1,14 @@
 import * as XLSX from 'xlsx';
-import type { DB, EvalResult, Period } from './types';
+import type { DB, EvalResult, Period, Unit } from './types';
 
 const r2 = (v: number | null | undefined) => (v == null || !Number.isFinite(v) ? null : Math.round(v * 100) / 100);
 
-export function exportPeriodExcel(db: DB, period: Period, results: EvalResult[]) {
+export function exportPeriodExcel(db: DB, unit: Unit, period: Period, results: EvalResult[]) {
   const wb = XLSX.utils.book_new();
-  const groups = db.settings.groups;
+  const groups = unit.settings.groups;
   const summary = [...results].sort((a, b) => a.rank - b.rank).map(r => {
     const emp = db.employees.find(e => e.id === r.evaluation.employeeId);
-    const row: Record<string, any> = { 'رتبه': r.rank, 'نام': emp?.name, 'سمت': emp?.title, 'روش ارزیابی': db.templates.find(t => t.id === r.evaluation.templateId)?.name };
+    const row: Record<string, any> = { 'رتبه': r.rank, 'نام': emp?.name, 'سمت': emp?.title, 'روش ارزیابی': unit.templates.find(t => t.id === r.evaluation.templateId)?.name };
     for (const g of r.groups) row[`${g.group.name} (٪)`] = r2(g.pct);
     row['نمره'] = r2(r.score); row['Bonus'] = r2(r.bonus); row['نمره نهایی'] = r2(r.total);
     row['سطح'] = r.band?.name ?? ''; row['تکمیل داده (٪)'] = r2(r.completion);
@@ -24,14 +24,14 @@ export function exportPeriodExcel(db: DB, period: Period, results: EvalResult[])
     const rows = r.kpis.map(k => ({
       'گروه': groups.find(g => g.id === k.kpi.groupId)?.name ?? '',
       'نام شاخص': k.kpi.name,
-      'نوع سنجش': db.settings.measureTypes.find(t => t.id === k.kpi.typeId)?.name ?? '',
+      'نوع سنجش': unit.settings.measureTypes.find(t => t.id === k.kpi.typeId)?.name ?? '',
       'دوره سنجش': k.kpi.period,
       'Min': k.kpi.min, 'Max': k.kpi.max, 'واحد': k.kpi.unit, 'وزن نهایی': k.kpi.weight,
       'مقدار فعلی': k.value,
       'درصد تحقق شاخص': k.achievement == null ? (k.missing ? '' : k.achievementLabel ?? '') : r2(k.achievement),
       'نمره کسب شده': k.missing ? null : r2(k.score),
       'Bonus': r2(k.bonus),
-      'نوع رفتار': db.settings.behaviors.find(b => b.id === k.kpi.behaviorId)?.name ?? '',
+      'نوع رفتار': unit.settings.behaviors.find(b => b.id === k.kpi.behaviorId)?.name ?? '',
       'تعریف': k.kpi.definition, 'مکانیزم محاسبه': k.kpi.mechanism, 'منبع داده': k.kpi.source,
     }));
     rows.push({} as any);
@@ -44,5 +44,5 @@ export function exportPeriodExcel(db: DB, period: Period, results: EvalResult[])
     XLSX.utils.book_append_sheet(wb, s, name);
   }
   (wb as any).Workbook = { Views: [{ RTL: true }] };
-  XLSX.writeFile(wb, `ارزیابی-${period.name.replace(/[\\/:*?"<>|]/g, '-')}.xlsx`);
+  XLSX.writeFile(wb, `ارزیابی-${unit.name}-${period.name.replace(/[\\/:*?"<>|]/g, '-')}.xlsx`);
 }

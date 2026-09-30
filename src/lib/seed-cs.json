@@ -1,0 +1,957 @@
+[
+ {
+  "name": "امور مشتریان",
+  "rows": [
+   {
+    "name": "CSAT",
+    "group": "g_task",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 80,
+    "max": 100,
+    "unit": "درصد",
+    "weight": 20,
+    "behavior": "b_up",
+    "definition": "میزان رضایت مشتریان از تعامل با کارشناس",
+    "mechanism": "(تعداد پاسخ ها با امتیاز 4 یا 5 / تعداد کل پاسخ های ثبت شده) * 100",
+    "source": "CRM / VoIP",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   },
+   {
+    "name": "امتیاز کیفی QC",
+    "group": "g_task",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 80,
+    "max": 100,
+    "unit": "درصد",
+    "weight": 40,
+    "behavior": "b_up",
+    "definition": "میزان کیفیت عملکرد کارشناس بر اساس ارزیابی QC",
+    "mechanism": "؟؟؟",
+    "source": "QC / CRM",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   },
+   {
+    "name": "نرخ زمان انجام کار در کارتابل",
+    "group": "g_task",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 10,
+    "max": 100,
+    "unit": "درصد",
+    "weight": 40,
+    "behavior": "b_down",
+    "definition": "برای هر کار در کارتابل، یک زمان پایان مشخص شده است. این شاخص، نرخ آیتم هایی که قبل از زمان پایان تعیین شده، از کارتابل خارج شده اند را نشان می دهد",
+    "mechanism": "(مجموع زمان انجام کار در کارتابل / مجموع زمان پایان کارتابل)  * 100",
+    "source": "CRM",
+    "note": "",
+    "tiers": null,
+    "sampleValue": 50
+   },
+   {
+    "name": "SLA",
+    "group": "g_task",
+    "type": "t_case",
+    "typeLabel": "موردی (به ازای هر کدوم)",
+    "period": "ماهانه",
+    "min": 0,
+    "max": 0,
+    "unit": "درصد",
+    "weight": 2,
+    "behavior": "b_down",
+    "definition": "برای هر کار در کارتابل، یک زمان پایان مشخص شده است. این شاخص، تعداد کارهای رد شده از زمان پایان کارتابل ها را نشان می دهد.",
+    "mechanism": "تعداد کارهای رد شده از زمان پایان کارتابل ها",
+    "source": "CRM",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   },
+   {
+    "name": "حجم فروش",
+    "group": "g_team",
+    "type": "t_step",
+    "typeLabel": "پله",
+    "period": "ماهانه",
+    "min": 1000000000,
+    "max": 3000000000,
+    "unit": "مبلغ (تومان)",
+    "weight": 40,
+    "behavior": "b_up",
+    "definition": "میانگین حجم فروش ریالی تیم",
+    "mechanism": "میانگین مبالغ فروش حاصل از تمدید قرارداد، فروش ماژول ها، پروژه های سفارشی و ...",
+    "source": "داشبورد پورسانت",
+    "note": "",
+    "tiers": [
+     [
+      0,
+      0
+     ],
+     [
+      2500,
+      5
+     ],
+     [
+      3000,
+      8
+     ],
+     [
+      4000,
+      12
+     ],
+     [
+      5000,
+      15
+     ]
+    ],
+    "sampleValue": 1351837770
+   },
+   {
+    "name": "نرخ تمدید قرارداد",
+    "group": "g_team",
+    "type": "t_step",
+    "typeLabel": "پله",
+    "period": "ماهانه",
+    "min": 45,
+    "max": 85,
+    "unit": "درصد",
+    "weight": 50,
+    "behavior": "b_up",
+    "definition": "درصد مشتریانی که قرارداد خود را تمدید می‌کنند",
+    "mechanism": "تعداد مشتریانی که با اختلاف حداکثر 3 ماه از تاریخ پایان قرارداد خود تمدید کردند/کل مشتریانی که در ماه جاری قراردادشان به اتمام می رسد",
+    "source": "داشبورد پورسانت",
+    "note": "",
+    "tiers": [
+     [
+      0,
+      0
+     ],
+     [
+      50,
+      5
+     ],
+     [
+      60,
+      8
+     ],
+     [
+      70,
+      12
+     ],
+     [
+      80,
+      15
+     ]
+    ],
+    "sampleValue": 55
+   },
+   {
+    "name": "OKR",
+    "group": "g_team",
+    "type": "t_spec",
+    "typeLabel": "طیفی",
+    "period": "ماهانه",
+    "min": 60,
+    "max": 100,
+    "unit": "درصد",
+    "weight": 10,
+    "behavior": "b_up",
+    "definition": "درصد تحقق Objective های واحد در کوارتر مربوطه",
+    "mechanism": "؟؟؟",
+    "source": "TFS",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   }
+  ]
+ },
+ {
+  "name": "کارشناس آموزش و کارشناس پشتیبان",
+  "rows": [
+   {
+    "name": "CSAT",
+    "group": "g_task",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 80,
+    "max": 100,
+    "unit": "درصد",
+    "weight": 20,
+    "behavior": "b_up",
+    "definition": "میزان رضایت مشتریان از تعامل با کارشناس",
+    "mechanism": "(تعداد پاسخ ها با امتیاز 4 یا 5 / تعداد کل پاسخ های ثبت شده) * 100",
+    "source": "CRM / VoIP",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   },
+   {
+    "name": "امتیاز کیفی QC",
+    "group": "g_task",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 80,
+    "max": 100,
+    "unit": "درصد",
+    "weight": 30,
+    "behavior": "b_up",
+    "definition": "میزان کیفیت عملکرد کارشناس بر اساس ارزیابی QC",
+    "mechanism": "؟؟؟",
+    "source": "QC / CRM",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   },
+   {
+    "name": "FRT تیکت",
+    "group": "g_task",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 5,
+    "max": 60,
+    "unit": "دقیقه",
+    "weight": 25,
+    "behavior": "b_down",
+    "definition": "مدت زمان بین اعلام درخواست توسط مشتری و دریافت اولین پاسخ از طرف کارشناس",
+    "mechanism": "متوسط (زمان ورود تماس ورودی به کارتابل کارشناس - زمان ایجاد لاگ تماس ورودی)",
+    "source": "CRM",
+    "note": "",
+    "tiers": null,
+    "sampleValue": 276
+   },
+   {
+    "name": "ART تیکت",
+    "group": "g_task",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 10,
+    "max": 180,
+    "unit": "دقیقه",
+    "weight": 25,
+    "behavior": "b_down",
+    "definition": "میانگین زمان بین اعلام درخواست توسط مشتری تا حل و بسته شدن تیکت",
+    "mechanism": "متوسط (زمان خروج تیکت از کارتابل کارشناس - زمان ایجاد لاگ تماس ورودی)",
+    "source": "CRM",
+    "note": "",
+    "tiers": null,
+    "sampleValue": 487.8
+   },
+   {
+    "name": "SLA",
+    "group": "g_task",
+    "type": "t_case",
+    "typeLabel": "موردی",
+    "period": "ماهانه",
+    "min": 0,
+    "max": 0,
+    "unit": "عدد",
+    "weight": 2,
+    "behavior": "b_down",
+    "definition": "برای هر کار در کارتابل، یک زمان پایان مشخص شده است. این شاخص، تعداد کارهای رد شده از زمان پایان کارتابل ها را نشان می دهد.",
+    "mechanism": "تعداد کارهای رد شده از زمان پایان کارتابل ها",
+    "source": "CRM",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   },
+   {
+    "name": "حجم فروش",
+    "group": "g_team",
+    "type": "t_step",
+    "typeLabel": "پله",
+    "period": "ماهانه",
+    "min": 1000000000,
+    "max": 3000000000,
+    "unit": "مبلغ (تومان)",
+    "weight": 30,
+    "behavior": "b_up",
+    "definition": "میانگین حجم فروش ریالی تیم",
+    "mechanism": "مجموع مبالغ فروش حاصل از تمدید قرارداد، فروش ماژول ها، پروژه های سفارشی و ...",
+    "source": "داشبورد پورسانت",
+    "note": "",
+    "tiers": [
+     [
+      0,
+      0
+     ],
+     [
+      2500,
+      5
+     ],
+     [
+      3000,
+      8
+     ],
+     [
+      4000,
+      12
+     ],
+     [
+      5000,
+      15
+     ]
+    ],
+    "sampleValue": 1351837770
+   },
+   {
+    "name": "نرخ تمدید قرارداد",
+    "group": "g_team",
+    "type": "t_step",
+    "typeLabel": "پله",
+    "period": "ماهانه",
+    "min": 45,
+    "max": 85,
+    "unit": "درصد",
+    "weight": 60,
+    "behavior": "b_up",
+    "definition": "درصد مشتریانی که قرارداد خود را تمدید می‌کنند",
+    "mechanism": "تعداد مشتریانی که با اختلاف حداکثر 3 ماه از تاریخ پایان قرارداد خود تمدید کردند/کل مشتریانی که در ماه جاری قراردادشان به اتمام می رسد",
+    "source": "داشبورد پورسانت",
+    "note": "",
+    "tiers": [
+     [
+      0,
+      0
+     ],
+     [
+      50,
+      5
+     ],
+     [
+      60,
+      8
+     ],
+     [
+      70,
+      12
+     ],
+     [
+      80,
+      15
+     ]
+    ],
+    "sampleValue": 55
+   },
+   {
+    "name": "OKR",
+    "group": "g_team",
+    "type": "t_spec",
+    "typeLabel": "طیفی",
+    "period": "ماهانه",
+    "min": 60,
+    "max": 100,
+    "unit": "درصد",
+    "weight": 10,
+    "behavior": "b_up",
+    "definition": "درصد تحقق Objective های واحد در کوارتر مربوطه",
+    "mechanism": "؟؟؟",
+    "source": "TFS",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   }
+  ]
+ },
+ {
+  "name": "تحلیلگر کسب و کار",
+  "rows": [
+   {
+    "name": "CSAT (رضایت نامه + جلسه + پروژه...",
+    "group": "g_task",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 80,
+    "max": 100,
+    "unit": "امتیاز",
+    "weight": 30,
+    "behavior": "b_up",
+    "definition": "میزان رضایت مشتریان از تعامل با کارشناس",
+    "mechanism": "میانگین امتیازات کسب شده در نظرسنجی جلسات پروژه",
+    "source": "CRM",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   },
+   {
+    "name": "نرخ امتیاز پروژه",
+    "group": "g_task",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 80,
+    "max": 100,
+    "unit": "امتیاز",
+    "weight": 20,
+    "behavior": "b_up",
+    "definition": "میزان رضایت بازرس (اکانت منیجر) از پروژه",
+    "mechanism": "میانگین امتیازات کسب شده از بازرس پروژه",
+    "source": "CRM",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   },
+   {
+    "name": "امتیاز کیفی QC",
+    "group": "g_task",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 80,
+    "max": 100,
+    "unit": "امتیاز",
+    "weight": 30,
+    "behavior": "b_up",
+    "definition": "میزان کیفیت عارضه های بررسی شده",
+    "mechanism": "؟؟؟",
+    "source": "QC",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   },
+   {
+    "name": "نرخ زمان انجام پروژه ها",
+    "group": "g_task",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 50,
+    "max": 100,
+    "unit": "درصد",
+    "weight": 20,
+    "behavior": "b_down",
+    "definition": "میانگین مدت زمانی که پروژه شروع می شود تا زمانی که خاتمه می یابد",
+    "mechanism": "متوسط (تاریخ پایان پروژه - تاریخ شروع پروژه)\n(از فرم \"شناسنامه پروژه استقرار\" برای پروژه هایی که در آن ماه اتمام یافته اند و در یکی از مراحل تحویل، بازبینی، استقرار یافته یا اتمام بدون بازبینی باشند)",
+    "source": "CRM",
+    "note": "",
+    "tiers": null,
+    "sampleValue": 72
+   },
+   {
+    "name": "حجم فروش",
+    "group": "g_team",
+    "type": "t_step",
+    "typeLabel": "پله",
+    "period": "ماهانه",
+    "min": 1000000000,
+    "max": 2000000000,
+    "unit": "مبلغ (تومان)",
+    "weight": 30,
+    "behavior": "b_up",
+    "definition": "میانگین حجم فروش ریالی تیم",
+    "mechanism": "میانگین مبالغ فروش حاصل از تمدید قرارداد، فروش ماژول ها، پروژه های سفارشی و ...",
+    "source": "داشبورد پورسانت",
+    "note": "",
+    "tiers": [
+     [
+      0,
+      0
+     ],
+     [
+      2500,
+      5
+     ],
+     [
+      3000,
+      8
+     ],
+     [
+      4000,
+      12
+     ],
+     [
+      5000,
+      15
+     ]
+    ],
+    "sampleValue": 1351837770
+   },
+   {
+    "name": "نرخ تمدید قرارداد",
+    "group": "g_team",
+    "type": "t_step",
+    "typeLabel": "پله",
+    "period": "ماهانه",
+    "min": 45,
+    "max": 85,
+    "unit": "درصد",
+    "weight": 60,
+    "behavior": "b_up",
+    "definition": "درصد مشتریانی که قرارداد خود را تمدید می‌کنند",
+    "mechanism": "تعداد مشتریانی که با اختلاف حداکثر 3 ماه از تاریخ پایان قرارداد خود تمدید کردند/کل مشتریانی که در ماه جاری قراردادشان به اتمام می رسد",
+    "source": "داشبورد پورسانت",
+    "note": "",
+    "tiers": [
+     [
+      0,
+      0
+     ],
+     [
+      50,
+      5
+     ],
+     [
+      60,
+      8
+     ],
+     [
+      70,
+      12
+     ],
+     [
+      80,
+      15
+     ]
+    ],
+    "sampleValue": 55
+   },
+   {
+    "name": "OKR",
+    "group": "g_team",
+    "type": "t_spec",
+    "typeLabel": "طیفی",
+    "period": "ماهانه",
+    "min": 60,
+    "max": 100,
+    "unit": "درصد",
+    "weight": 10,
+    "behavior": "b_up",
+    "definition": "درصد تحقق Objective های واحد در کوارتر مربوطه",
+    "mechanism": "؟؟؟",
+    "source": "TFS",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   }
+  ]
+ },
+ {
+  "name": "مدیر پروژه",
+  "rows": [
+   {
+    "name": "CSAT پروژه کارشناسان",
+    "group": "g_task",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 80,
+    "max": 100,
+    "unit": "امتیاز",
+    "weight": 20,
+    "behavior": "b_up",
+    "definition": "میزان رضایت مشتریان از تعامل با تیم کارشناسان",
+    "mechanism": "میانگین امتیازات کسب شده در نظرسنجی جلسات پروژه",
+    "source": "CRM",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   },
+   {
+    "name": "نرخ امتیاز پروژه کارشناسان",
+    "group": "g_task",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 80,
+    "max": 100,
+    "unit": "امتیاز",
+    "weight": 20,
+    "behavior": "b_up",
+    "definition": "میزان رضایت بازرس (اکانت منیجر) از پروژه کارشناسان",
+    "mechanism": "میانگین امتیازات کسب شده از بازرس پروژه",
+    "source": "CRM",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   },
+   {
+    "name": "میانگین نمرات شاخص فردی کارشناسان",
+    "group": "g_task",
+    "type": "t_step",
+    "typeLabel": "پله",
+    "period": "ماهانه",
+    "min": 10,
+    "max": 40,
+    "unit": "درصد",
+    "weight": 20,
+    "behavior": "b_up",
+    "definition": "",
+    "mechanism": "",
+    "source": "",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   },
+   {
+    "name": "امتیاز کیفی QC",
+    "group": "g_task",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 80,
+    "max": 100,
+    "unit": "امتیاز",
+    "weight": 20,
+    "behavior": "b_up",
+    "definition": "میزان کیفیت عارضه های بررسی شده",
+    "mechanism": "؟؟؟",
+    "source": "QC",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   },
+   {
+    "name": "میانگین زمان انجام پروژه های کارشناسان (وزن بدیم، ابری سازمانی استاندارد)",
+    "group": "g_task",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 50,
+    "max": 100,
+    "unit": "روز",
+    "weight": 20,
+    "behavior": "b_down",
+    "definition": "میانگین مدت زمانی که پروژه کارشناسان شروع می شود تا زمانی که خاتمه می یابد",
+    "mechanism": "متوسط (تاریخ پایان پروژه - تاریخ شروع پروژه)\n(از فرم \"شناسنامه پروژه استقرار\" برای پروژه هایی که در آن ماه اتمام یافته اند و در یکی از مراحل تحویل، بازبینی، استقرار یافته یا اتمام بدون بازبینی باشند)",
+    "source": "CRM",
+    "note": "",
+    "tiers": null,
+    "sampleValue": 65
+   },
+   {
+    "name": "حجم فروش",
+    "group": "g_team",
+    "type": "t_step",
+    "typeLabel": "پله",
+    "period": "ماهانه",
+    "min": 1000000000,
+    "max": 2000000000,
+    "unit": "مبلغ (تومان)",
+    "weight": 30,
+    "behavior": "b_up",
+    "definition": "میانگین حجم فروش ریالی تیم",
+    "mechanism": "میانگین مبالغ فروش حاصل از تمدید قرارداد، فروش ماژول ها، پروژه های سفارشی و ...",
+    "source": "داشبورد پورسانت",
+    "note": "",
+    "tiers": [
+     [
+      0,
+      0
+     ],
+     [
+      2500,
+      5
+     ],
+     [
+      3000,
+      8
+     ],
+     [
+      4000,
+      12
+     ],
+     [
+      5000,
+      15
+     ]
+    ],
+    "sampleValue": 1351837770
+   },
+   {
+    "name": "نرخ تمدید قرارداد",
+    "group": "g_team",
+    "type": "t_step",
+    "typeLabel": "پله",
+    "period": "ماهانه",
+    "min": 45,
+    "max": 85,
+    "unit": "درصد",
+    "weight": 60,
+    "behavior": "b_up",
+    "definition": "درصد مشتریانی که قرارداد خود را تمدید می‌کنند",
+    "mechanism": "تعداد مشتریانی که با اختلاف حداکثر 3 ماه از تاریخ پایان قرارداد خود تمدید کردند/کل مشتریانی که در ماه جاری قراردادشان به اتمام می رسد",
+    "source": "داشبورد پورسانت",
+    "note": "",
+    "tiers": [
+     [
+      0,
+      0
+     ],
+     [
+      50,
+      5
+     ],
+     [
+      60,
+      8
+     ],
+     [
+      70,
+      12
+     ],
+     [
+      80,
+      15
+     ]
+    ],
+    "sampleValue": 55
+   },
+   {
+    "name": "OKR",
+    "group": "g_team",
+    "type": "t_spec",
+    "typeLabel": "طیفی",
+    "period": "ماهانه",
+    "min": 60,
+    "max": 100,
+    "unit": "درصد",
+    "weight": 10,
+    "behavior": "b_up",
+    "definition": "درصد تحقق Objective های واحد در کوارتر مربوطه",
+    "mechanism": "؟؟؟",
+    "source": "TFS",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   }
+  ]
+ },
+ {
+  "name": "اکانت منیجر",
+  "rows": [
+   {
+    "name": "میانگین زمان انجام کار در کارتابل",
+    "group": "g_task",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 0,
+    "max": 0,
+    "unit": "دقیقه",
+    "weight": 30,
+    "behavior": "b_down",
+    "definition": "میانگین زمانی که آیتم وارد کارتابل می شود تا زمانی که از آن خارج گردد",
+    "mechanism": "متوسط (زمان خروج آیتم از کارتابل - زمان ورود آیتم به کارتابل)",
+    "source": "CRM",
+    "note": "Min/Max در فایل اکسل تعیین نشده (؟؟؟)",
+    "tiers": null,
+    "sampleValue": null
+   },
+   {
+    "name": "میانگین نمرات شاخص فردی کارشناسان (امتیازی که کسب میکنه)",
+    "group": "g_task",
+    "type": "t_step",
+    "typeLabel": "پله",
+    "period": "ماهانه",
+    "min": 10,
+    "max": 40,
+    "unit": "درصد",
+    "weight": 40,
+    "behavior": "b_up",
+    "definition": "",
+    "mechanism": "",
+    "source": "",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   },
+   {
+    "name": "امتیاز کیفی QC",
+    "group": "g_task",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 80,
+    "max": 100,
+    "unit": "امتیاز",
+    "weight": 30,
+    "behavior": "b_up",
+    "definition": "میزان کیفیت عارضه های بررسی شده",
+    "mechanism": "؟؟؟",
+    "source": "QC",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   },
+   {
+    "name": "CSAT",
+    "group": "g_team",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 80,
+    "max": 100,
+    "unit": "امتیاز",
+    "weight": 10,
+    "behavior": "b_up",
+    "definition": "میزان رضایت مشتریان از تعامل با کارشناسان تیم",
+    "mechanism": "میانگین CSAT کسب شده توسط کارشناسان تیم",
+    "source": "CRM",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   },
+   {
+    "name": "FRT تیکت",
+    "group": "g_team",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 60,
+    "max": 120,
+    "unit": "دقیقه",
+    "weight": 15,
+    "behavior": "b_down",
+    "definition": "مدت زمان بین اعلام درخواست توسط مشتری و دریافت اولین پاسخ از طرف کارشناس",
+    "mechanism": "متوسط (زمان ثبت تیکت - زمان اعلام درخواست توسط مشتری)",
+    "source": "داشبورد تیکت / CRM",
+    "note": "",
+    "tiers": null,
+    "sampleValue": 300
+   },
+   {
+    "name": "ART تیکت",
+    "group": "g_team",
+    "type": "t_spec",
+    "typeLabel": "طیف",
+    "period": "ماهانه",
+    "min": 2.5,
+    "max": 4,
+    "unit": "ساعت",
+    "weight": 15,
+    "behavior": "b_down",
+    "definition": "میانگین زمان بین اعلام درخواست توسط مشتری تا حل و بسته شدن تیکت",
+    "mechanism": "متوسط (زمان بسته شدن تیکت - زمان اعلام درخواست توسط مشتری)",
+    "source": "داشبورد تیکت / CRM",
+    "note": "",
+    "tiers": null,
+    "sampleValue": 6.6
+   },
+   {
+    "name": "حجم فروش",
+    "group": "g_team",
+    "type": "t_step",
+    "typeLabel": "پله",
+    "period": "ماهانه",
+    "min": 1000000000,
+    "max": 2000000000,
+    "unit": "مبلغ (تومان)",
+    "weight": 20,
+    "behavior": "b_up",
+    "definition": "میانگین حجم فروش ریالی تیم",
+    "mechanism": "میانگین مبالغ فروش حاصل از تمدید قرارداد، فروش ماژول ها، پروژه های سفارشی و ...",
+    "source": "داشبورد پورسانت",
+    "note": "",
+    "tiers": [
+     [
+      0,
+      0
+     ],
+     [
+      2500,
+      5
+     ],
+     [
+      3000,
+      8
+     ],
+     [
+      4000,
+      12
+     ],
+     [
+      5000,
+      15
+     ]
+    ],
+    "sampleValue": 1351837770
+   },
+   {
+    "name": "نرخ تمدید قرارداد",
+    "group": "g_team",
+    "type": "t_step",
+    "typeLabel": "پله",
+    "period": "ماهانه",
+    "min": 45,
+    "max": 85,
+    "unit": "درصد",
+    "weight": 30,
+    "behavior": "b_up",
+    "definition": "درصد مشتریانی که قرارداد خود را تمدید می‌کنند",
+    "mechanism": "تعداد مشتریانی که با اختلاف حداکثر 3 ماه از تاریخ پایان قرارداد خود تمدید کردند/کل مشتریانی که در ماه جاری قراردادشان به اتمام می رسد",
+    "source": "داشبورد پورسانت",
+    "note": "",
+    "tiers": [
+     [
+      0,
+      0
+     ],
+     [
+      50,
+      5
+     ],
+     [
+      60,
+      8
+     ],
+     [
+      70,
+      12
+     ],
+     [
+      80,
+      15
+     ]
+    ],
+    "sampleValue": 55
+   },
+   {
+    "name": "OKR",
+    "group": "g_team",
+    "type": "t_spec",
+    "typeLabel": "طیفی",
+    "period": "ماهانه",
+    "min": 60,
+    "max": 100,
+    "unit": "درصد",
+    "weight": 10,
+    "behavior": "b_up",
+    "definition": "درصد تحقق Objective های واحد در کوارتر مربوطه",
+    "mechanism": "؟؟؟",
+    "source": "TFS",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   },
+   {
+    "name": "SLA",
+    "group": "g_team",
+    "type": "t_case",
+    "typeLabel": "موردی",
+    "period": "ماهانه",
+    "min": 0,
+    "max": 0,
+    "unit": "عدد",
+    "weight": 2,
+    "behavior": "b_down",
+    "definition": "برای هر کار در کارتابل، یک زمان پایان مشخص شده است. این شاخص، تعداد کارهای رد شده از زمان پایان کارتابل ها را نشان می دهد.",
+    "mechanism": "تعداد کارهای رد شده از زمان پایان کارتابل ها",
+    "source": "CRM",
+    "note": "",
+    "tiers": null,
+    "sampleValue": null
+   }
+  ]
+ }
+]

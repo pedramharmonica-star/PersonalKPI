@@ -1,4 +1,5 @@
-import type { DB, KPI, Settings, Template, Tier, BonusMode } from './types';
+import type { DB, KPI, Settings, Template, Tier, BonusMode, DimConfig, Unit, Employee, Evaluation } from './types';
+import csData from './seed-cs.json';
 import { rangeFor } from './jalali';
 
 let c = 0;
@@ -9,8 +10,8 @@ export const defaultSettings = (): Settings => ({
   overCap: 120,
   bonusPct: 20,
   groups: [
-    { id: 'g_task', name: 'وظیفه‌ای', weight: 50, color: '#178C8C' },
-    { id: 'g_team', name: 'تیمی', weight: 50, color: '#2F5D8A' },
+    { id: 'g_task', name: 'وظیفه‌ای', weight: 50, color: '#EEC56A' },
+    { id: 'g_team', name: 'تیمی', weight: 50, color: '#7FA3C0' },
   ],
   measureTypes: [
     { id: 't_spec', name: 'طیف', engine: 'spectrum' },
@@ -25,10 +26,10 @@ export const defaultSettings = (): Settings => ({
   periodLabels: ['ماهانه', 'فصلی', 'شش‌ماهه', 'سالانه'],
   units: ['درصد', 'مبلغ (میلیون تومان)', 'مبلغ (میلیارد تومان)', 'روز', 'دقیقه', 'تعداد'],
   bands: [
-    { id: 'bd1', name: 'ممتاز', min: 90, color: '#178C8C' },
-    { id: 'bd2', name: 'خوب', min: 75, color: '#2F5D8A' },
-    { id: 'bd3', name: 'قابل قبول', min: 60, color: '#D99A1E' },
-    { id: 'bd4', name: 'نیازمند بهبود', min: 0, color: '#B8432F' },
+    { id: 'bd1', name: 'ممتاز', min: 90, color: '#1DB5A8' },
+    { id: 'bd2', name: 'خوب', min: 75, color: '#7FA3C0' },
+    { id: 'bd3', name: 'قابل قبول', min: 60, color: '#EEC56A' },
+    { id: 'bd4', name: 'نیازمند بهبود', min: 0, color: '#E35D5D' },
   ],
   excludeMissing: false,
   rankBy: 'total',
@@ -87,7 +88,7 @@ const expertRows: Row[] = [
   ['OKR', 'g_team', 't_spec', 'فصلی', 60, 100, 'درصد', 20, 'b_up', 'none', 'درصد تحقق Objective های واحد در کوارتر مربوطه', '؟؟؟', 'TFS'],
 ];
 
-export function buildSeed(): DB {
+function buildSalesUnit(): { unit: Unit; employees: Employee[]; evaluations: Evaluation[]; period: any } {
   const settings = defaultSettings();
   // Excel senior template: meeting-time Min=14, Max=1 (lower is better) → stored as «کاهشی» 1..14 (identical result)
   const tSenior: Template = { id: 'tpl_senior', name: 'کارشناس ارشد فروش', description: 'برگرفته از شیت «کارشناس ارشد فروش»', kpis: seniorRows(1, 14, 'b_down').map((r, i) => mk(r, `ks${i + 1}`)) };
@@ -111,15 +112,55 @@ export function buildSeed(): DB {
       : tExpert.kpis.map(k => structuredClone(k));
     const values: Record<string, number | null> = {};
     kpis.forEach((k, i) => (values[k.id] = p.vals[i]));
-    return { id: `ev_${p.id}_${period.id}`, periodId: period.id, employeeId: p.id, templateId: p.tpl, kpis, values, note: '', updatedAt: Date.now() };
+    return { id: `ev_${p.id}_${period.id}`, periodId: period.id, employeeId: p.id, templateId: p.tpl, kpis, values, exams: [], competency: null, org: {}, note: '', updatedAt: Date.now() };
   });
 
+  const unit: Unit = { id: 'u_sales', name: 'فروش', color: '#F26122', description: 'برگرفته از فایل Sales_KPI.xlsx', settings, templates: [tExpert, tSenior], dims: defaultDims(), createdAt: 1 };
   return {
-    version: 1,
-    settings,
-    templates: [tExpert, tSenior],
-    employees: people.map(p => ({ id: p.id, name: p.name, title: p.title, templateId: p.tpl, team: 'فروش', active: true, note: '' })),
-    periods: [period],
-    evaluations,
+    unit, period, evaluations,
+    employees: people.map(p => ({ id: p.id, unitId: 'u_sales', name: p.name, title: p.title, templateId: p.tpl, team: 'فروش', active: true, note: '' })),
+  };
+}
+
+export const defaultDims = (): DimConfig => ({
+  weights: { kpi: 70, individual: 15, org: 15 },
+  examTopics: ['دانش محصول پیام‌گستر', 'فرآیندها و روال‌های واحد', 'مهارت‌های تخصصی شغل'],
+  passPct: 70,
+  individualMix: { exam: 70, competency: 30 },
+  orgItems: [{ id: 'o_ocb', name: 'پرسشنامه رفتار شهروندی سازمانی (OCB)' }],
+  missing: 'exclude',
+});
+
+function buildCsUnit(): Unit {
+  const settings = defaultSettings();
+  settings.units = [...settings.units, 'مبلغ (تومان)', 'امتیاز', 'ساعت', 'عدد'];
+  let n = 0;
+  const templates: Template[] = (csData as any[]).map((t, ti) => ({
+    id: `tpl_cs${ti + 1}`, name: t.name, description: 'برگرفته از فایل «شاخص های عملکردی واحد موفقیت مشتری»',
+    kpis: t.rows.map((r: any): KPI => {
+      const step = r.type === 't_step';
+      const real = Array.isArray(r.tiers);
+      const bonusMode: BonusMode = r.type === 't_spec' ? (r.name === 'OKR' ? 'none' : 'fullFixed') : 'none';
+      return {
+        id: `kc${++n}`, name: r.name, groupId: r.group, typeId: r.type, period: r.period, min: r.min, max: r.max, unit: r.unit,
+        weight: r.weight, behaviorId: r.behavior, bonusMode, bonusPct: null, scoreCap: null,
+        tiers: step ? (real ? r.tiers.map((x: number[]) => ({ from: x[0], score: x[1] })) : sampleTiers(r.min, r.max, r.weight)) : [],
+        stepSize: 0, stepPoints: 0, tiersSample: step && !real ? true : undefined,
+        definition: r.definition, mechanism: [r.mechanism, r.note].filter(Boolean).join(' — '), source: r.source,
+      };
+    }),
+  }));
+  return { id: 'u_cs', name: 'موفقیت مشتری', color: '#1DB5A8', description: 'برگرفته از فایل «شاخص های عملکردی واحد موفقیت مشتری»', settings, templates, dims: defaultDims(), createdAt: 2 };
+}
+
+export function buildSeed(): DB {
+  const s = buildSalesUnit();
+  return {
+    version: 2,
+    units: [s.unit, buildCsUnit()],
+    employees: s.employees,
+    periods: [s.period],
+    evaluations: s.evaluations,
+    security: { user: 'admin', passHash: '' },
   };
 }

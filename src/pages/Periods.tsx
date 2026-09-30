@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { CalendarPlus, Pencil, Trash2, ClipboardPen } from 'lucide-react';
 import { useStore } from '../lib/store';
-import { useAllResults, useSortedPeriods } from '../lib/hooks';
+import { useAllPeople, useSortedPeriods } from '../lib/hooks';
 import { HALVES, KIND_LABEL, MONTHS, QUARTERS, daysBetween, rangeFor, todayJ, toTime } from '../lib/jalali';
 import { uid } from '../lib/seed';
 import type { Period, PeriodKind } from '../lib/types';
@@ -12,7 +12,7 @@ export default function Periods({ go }: { go: (p: Page) => void }) {
   const db = useStore(s => s.db)!;
   const { upsertPeriod, deletePeriod, setPeriod, mutate, notify } = useStore();
   const periods = useSortedPeriods();
-  const all = useAllResults();
+  const all = useAllPeople();
   const t = todayJ();
 
   const [kind, setKind] = useState<PeriodKind>('quarter');
@@ -42,10 +42,10 @@ export default function Periods({ go }: { go: (p: Page) => void }) {
         const src = copyFrom ? d.evaluations.filter(e => e.periodId === copyFrom) : [];
         for (const e of d.employees.filter(x => x.active)) {
           const prev = src.find(x => x.employeeId === e.id);
-          const tpl = d.templates.find(x => x.id === e.templateId);
+          const tpl = d.units.find(u => u.id === e.unitId)?.templates.find(x => x.id === e.templateId);
           const kpis = prev ? structuredClone(prev.kpis) : tpl ? structuredClone(tpl.kpis) : null;
           if (!kpis) continue;
-          d.evaluations.push({ id: uid('ev'), periodId: p.id, employeeId: e.id, templateId: prev?.templateId ?? tpl!.id, kpis, values: Object.fromEntries(kpis.map(k => [k.id, null])), note: '', updatedAt: Date.now() });
+          d.evaluations.push({ id: uid('ev'), periodId: p.id, employeeId: e.id, templateId: prev?.templateId ?? tpl!.id, kpis, values: Object.fromEntries(kpis.map(k => [k.id, null])), exams: [], competency: null, org: {}, note: '', updatedAt: Date.now() });
         }
       }
     });
@@ -76,7 +76,7 @@ export default function Periods({ go }: { go: (p: Page) => void }) {
               <Field label="نام بازه (اختیاری)"><TextInput value={customName} onChange={e => setCustomName(e.target.value)} placeholder="مثلاً کمپین پاییز" /></Field>
             </div>
           )}
-          <div className="rounded-lg bg-paper px-4 py-3 text-sm leading-7">
+          <div className="rounded-lg bg-white/[.05] px-4 py-3 text-sm leading-7">
             <div className="font-bold text-ink">{preview.name}</div>
             <div className="text-mute">{preview.start} تا {preview.end} {!invalid && `(${daysBetween(preview.start, preview.end)} روز)`}</div>
             {invalid && <div className="text-anar">تاریخ پایان قبل از تاریخ شروع است.</div>}
@@ -98,16 +98,16 @@ export default function Periods({ go }: { go: (p: Page) => void }) {
       <Panel title={`بازه‌های ذخیره‌شده (${periods.length})`} pad={false}>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-sm">
-            <thead><tr className="border-b border-line text-right text-xs text-mute">
+            <thead><tr className="border-b border-white/10 text-right text-xs text-mute">
               <th className="px-5 py-2.5 font-medium">نام</th><th className="px-3 font-medium">نوع</th><th className="px-3 font-medium">از</th><th className="px-3 font-medium">تا</th>
-              <th className="px-3 font-medium">ارزیابی‌ها</th><th className="px-3 font-medium">میانگین نمره</th><th />
+              <th className="px-3 font-medium">ارزیابی‌ها</th><th className="px-3 font-medium">میانگین نمره کلی</th><th />
             </tr></thead>
             <tbody>
               {[...periods].reverse().map(p => {
                 const rs = all.get(p.id) ?? [];
-                const avg = rs.length ? rs.reduce((a, r) => a + r.total, 0) / rs.length : null;
+                const avg = rs.length ? rs.reduce((a, r) => a + r.overall, 0) / rs.length : null;
                 return (
-                  <tr key={p.id} className="border-t border-line/70 hover:bg-paper/50">
+                  <tr key={p.id} className="border-t border-white/[.06] hover:bg-white/[.03]">
                     <td className="px-5 py-3 font-bold text-ink">{p.name}{p.note && <div className="text-[11px] font-normal text-mute">{p.note}</div>}</td>
                     <td className="px-3 text-mute">{KIND_LABEL[p.kind]}</td>
                     <td className="px-3 tabular-nums">{p.start}</td>

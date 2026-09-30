@@ -1,4 +1,4 @@
-import type { DB, Engine, Direction, EvalResult, Evaluation, GroupResult, KPI, KpiResult, Settings } from './types';
+import type { DB, Engine, Direction, EvalResult, Evaluation, GroupResult, KPI, KpiResult, Settings, Unit, PersonResult, DimKey } from './types';
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const EPS = 1e-9;
@@ -74,8 +74,8 @@ export function computeKpi(s: Settings, k: KPI, value: number | null | undefined
       break;
     }
     case 'case': {
-      label = 'شاخص مثبت/منفی';
-      raw = W * v; // Excel: H * I
+      label = dir === 'down' ? 'شاخص منفی (به ازای هر مورد)' : 'شاخص مثبت (به ازای هر مورد)';
+      raw = (dir === 'down' ? -1 : 1) * W * v; // Excel: H * I — «کاهشی» items subtract
       break;
     }
     case 'rank': {
@@ -106,15 +106,14 @@ export function computeKpi(s: Settings, k: KPI, value: number | null | undefined
   return { ...base, achievement, achievementLabel: label, raw, score, bonus };
 }
 
-export function computeEvaluation(db: DB, ev: Evaluation, peerMap: Map<string, number[]>): Omit<EvalResult, 'rank'> {
-  const s = db.settings;
+export function computeEvaluation(s: Settings, ev: Evaluation, peerMap: Map<string, number[]>): Omit<EvalResult, 'rank'> {
   const kpis = ev.kpis.map(k => computeKpi(s, k, ev.values[k.id], peerMap.get(k.name.trim()) ?? []));
   const groups: GroupResult[] = [];
   for (const g of s.groups) {
     const items = kpis.filter(r => r.kpi.groupId === g.id && (!s.excludeMissing || !r.missing));
     const all = kpis.filter(r => r.kpi.groupId === g.id);
     if (!all.length) continue;
-    const weight = items.reduce((a, r) => a + (Number(r.kpi.weight) || 0), 0);
+    const weight = items.reduce((a, r) => a + (r.engine === 'case' ? 0 : Number(r.kpi.weight) || 0), 0);
     const score = items.reduce((a, r) => a + r.score, 0);
     const bonus = items.reduce((a, r) => a + r.bonus, 0);
     groups.push({ group: g, weight, score, bonus, pct: weight ? (score / weight) * 100 : 0, bonusPct: weight ? (bonus / weight) * 100 : 0 });
@@ -122,7 +121,7 @@ export function computeEvaluation(db: DB, ev: Evaluation, peerMap: Map<string, n
   // KPIs whose group was deleted
   const orphan = kpis.filter(r => !s.groups.some(g => g.id === r.kpi.groupId));
   if (orphan.length) {
-    const weight = orphan.reduce((a, r) => a + (Number(r.kpi.weight) || 0), 0);
+    const weight = orphan.reduce((a, r) => a + (r.engine === 'case' ? 0 : Number(r.kpi.weight) || 0), 0);
     const score = orphan.reduce((a, r) => a + r.score, 0);
     const bonus = orphan.reduce((a, r) => a + r.bonus, 0);
     groups.push({ group: { id: '_', name: 'بدون گروه', weight: 0, color: '#8FA9B8' }, weight, score, bonus, pct: weight ? score / weight * 100 : 0, bonusPct: weight ? bonus / weight * 100 : 0 });
@@ -145,8 +144,9 @@ export function computeEvaluation(db: DB, ev: Evaluation, peerMap: Map<string, n
   return { evaluation: ev, kpis, groups, score, bonus, total, completion, band };
 }
 
-export function computePeriod(db: DB, periodId: string): EvalResult[] {
-  const evs = db.evaluations.filter(e => e.periodId === periodId && db.employees.some(p => p.id === e.employeeId));
+export function computeUnitPeriod(db: DB, unit: Unit, periodId: string): EvalResult[] {
+  const empIds = new Set(db.employees.filter(e => e.unitId === unit.id).map(e => e.id));
+  const evs = db.evaluations.filter(e => e.periodId === periodId && empIds.has(e.employeeId));
   const peerMap = new Map<string, number[]>();
   for (const e of evs) for (const k of e.kpis) {
     const v = e.values[k.id];
@@ -155,17 +155,70 @@ export function computePeriod(db: DB, periodId: string): EvalResult[] {
     if (!peerMap.has(key)) peerMap.set(key, []);
     peerMap.get(key)!.push(v);
   }
-  const res = evs.map(e => computeEvaluation(db, e, peerMap));
-  const key = (r: typeof res[number]) => db.settings.rankBy === 'total' ? r.total : r.score;
+  const res = evs.map(e => computeEvaluation(unit.settings, e, peerMap));
+  const key = (r: typeof res[number]) => unit.settings.rankBy === 'total' ? r.total : r.score;
   const sorted = [...res].sort((a, b) => key(b) - key(a));
   return sorted.map((r) => ({ ...r, rank: sorted.findIndex(x => Math.abs(key(x) - key(r)) < 1e-9) + 1 }));
+}
+
+export const DIM_LABEL: Record<DimKey, string> = { kpi: 'وظیفه‌ای و تیمی', individual: 'فردی', org: 'سازمانی' };
+
+/** Full 4-dimension result for everybody in a period (whole organization or one unit) */
+export function computePeople(db: DB, periodId: string, unitId?: string): PersonResult[] {
+  const out: PersonResult[] = [];
+  for (const unit of db.units) {
+    if (unitId && unit.id !== unitId) continue;
+    const d = unit.dims;
+    for (const r of computeUnitPeriod(db, unit, periodId)) {
+      const ev = r.evaluation;
+      const emp = db.employees.find(e => e.id === ev.employeeId)!;
+      const exams = (ev.exams ?? []).filter(x => x.score != null && x.max > 0);
+      const pcts = exams.map(x => (x.score! / x.max) * 100);
+      const examAvg = pcts.length ? pcts.reduce((a, b) => a + b, 0) / pcts.length : null;
+      const competency = ev.competency ?? null;
+      const mix: [number | null, number][] = [[examAvg, d.individualMix.exam], [competency, d.individualMix.competency]];
+      const avail = mix.filter(([v]) => v != null);
+      const wsum = avail.reduce((a, [, w]) => a + w, 0);
+      const indPct = avail.length ? (wsum > 0 ? avail.reduce((a, [v, w]) => a + (v as number) * w, 0) / wsum : avail.reduce((a, [v]) => a + (v as number), 0) / avail.length) : null;
+      const items = d.orgItems.map(it => ({ name: it.name, value: ev.org?.[it.id] ?? null }));
+      const ov = items.filter(i => i.value != null).map(i => i.value as number);
+      const orgPct = ov.length ? ov.reduce((a, b) => a + b, 0) / ov.length : null;
+      const kpiPct = unit.settings.rankBy === 'total' ? r.total : r.score;
+      const kpiEntered = r.kpis.some(k => !k.missing);
+      const vals: [DimKey, number | null][] = [['kpi', kpiEntered ? kpiPct : null], ['individual', indPct], ['org', orgPct]];
+      let num = 0, den = 0, entered = 0;
+      for (const [k, v] of vals) {
+        const w = Number(d.weights[k]) || 0;
+        if (v == null) { if (d.missing === 'zero') den += w; continue; }
+        entered++; num += v * w; den += w;
+      }
+      const overall = den > 0 ? num / den : 0;
+      const band = [...unit.settings.bands].sort((a, b) => b.min - a.min).find(b => overall >= b.min) ?? null;
+      out.push({ emp, unit, ev, kpi: r, kpiPct, individual: { pct: indPct, examAvg, passed: pcts.filter(p => p >= d.passPct).length, examCount: pcts.length, competency },
+        org: { pct: orgPct, items }, overall, dimsEntered: entered, band, unitRank: 0, orgRank: 0 });
+    }
+  }
+  const rankBy = (arr: PersonResult[], set: (p: PersonResult, n: number) => void) => {
+    const s = [...arr].sort((a, b) => b.overall - a.overall);
+    for (const p of arr) set(p, s.findIndex(x => Math.abs(x.overall - p.overall) < 1e-9) + 1);
+  };
+  rankBy(out, (p, n) => (p.orgRank = n));
+  for (const u of db.units) rankBy(out.filter(p => p.unit.id === u.id), (p, n) => (p.unitRank = n));
+  return out.sort((a, b) => b.overall - a.overall);
+}
+
+export function dimValue(p: PersonResult, k: DimKey | 'overall'): number | null {
+  if (k === 'overall') return p.overall;
+  if (k === 'kpi') return p.kpi.kpis.some(x => !x.missing) ? p.kpiPct : null;
+  if (k === 'individual') return p.individual.pct;
+  return p.org.pct;
 }
 
 /** Excel conditional format: 0 red → 50 white → 120 green */
 export function achColor(p: number | null, overCap = 120): string {
   if (p == null) return 'transparent';
   const lerp = (a: number[], b: number[], t: number) => a.map((x, i) => Math.round(x + (b[i] - x) * t));
-  const red = [214, 120, 100], white = [247, 247, 244], green = [74, 170, 150];
+  const red = [204, 72, 60], white = [120, 124, 132], green = [38, 166, 120];
   const c = p <= 50 ? lerp(red, white, clamp(p / 50, 0, 1)) : lerp(white, green, clamp((p - 50) / (overCap - 50), 0, 1));
   return `rgb(${c[0]},${c[1]},${c[2]})`;
 }

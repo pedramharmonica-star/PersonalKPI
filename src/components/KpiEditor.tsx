@@ -61,7 +61,7 @@ export function KpiDetails({ k, s, onChange, readOnly }: { k: KPI; s: Settings; 
         {eng === 'step' && (
           <div>
             <div className="text-xs text-mute">پله‌ها {k.tiersSample && <span className="text-saffron-700">(نمونه)</span>}</div>
-            <div className="mt-1 flex flex-wrap gap-1">{[...k.tiers].sort((a, b) => a.from - b.from).map((t, i) => <span key={i} className="rounded bg-paper px-2 py-0.5 tabular-nums">از {n(t.from, 2)} ← {n(t.score, 2)}</span>)}</div>
+            <div className="mt-1 flex flex-wrap gap-1">{[...k.tiers].sort((a, b) => a.from - b.from).map((t, i) => <span key={i} className="rounded bg-white/[.05] px-2 py-0.5 tabular-nums">از {n(t.from, 2)} ← {n(t.score, 2)}</span>)}</div>
             {k.stepSize > 0 && <div className="mt-1 text-xs text-mute">مازاد: هر {n(k.stepSize, 2)} واحد بالاتر از Max = {n(k.stepPoints, 2)} امتیاز</div>}
           </div>
         )}
@@ -71,9 +71,9 @@ export function KpiDetails({ k, s, onChange, readOnly }: { k: KPI; s: Settings; 
   return (
     <div className="space-y-4">
       <div className="grid gap-3 md:grid-cols-3">
-        <Field label="تعریف"><textarea className="min-h-[72px] w-full rounded-lg border border-line p-2.5 text-sm outline-none focus:border-firouzeh" value={k.definition} onChange={e => up({ definition: e.target.value })} /></Field>
-        <Field label="مکانیزم محاسبه"><textarea className="min-h-[72px] w-full rounded-lg border border-line p-2.5 text-sm outline-none focus:border-firouzeh" value={k.mechanism} onChange={e => up({ mechanism: e.target.value })} /></Field>
-        <Field label="منبع داده"><textarea className="min-h-[72px] w-full rounded-lg border border-line p-2.5 text-sm outline-none focus:border-firouzeh" value={k.source} onChange={e => up({ source: e.target.value })} /></Field>
+        <Field label="تعریف"><textarea className="min-h-[72px] w-full rounded-lg border border-white/10 p-2.5 text-sm outline-none focus:border-brand" value={k.definition} onChange={e => up({ definition: e.target.value })} /></Field>
+        <Field label="مکانیزم محاسبه"><textarea className="min-h-[72px] w-full rounded-lg border border-white/10 p-2.5 text-sm outline-none focus:border-brand" value={k.mechanism} onChange={e => up({ mechanism: e.target.value })} /></Field>
+        <Field label="منبع داده"><textarea className="min-h-[72px] w-full rounded-lg border border-white/10 p-2.5 text-sm outline-none focus:border-brand" value={k.source} onChange={e => up({ source: e.target.value })} /></Field>
       </div>
       <div className="grid gap-3 md:grid-cols-4">
         <Field label="گروه شاخص">
@@ -89,7 +89,7 @@ export function KpiDetails({ k, s, onChange, readOnly }: { k: KPI; s: Settings; 
         </Field>
       </div>
       {eng === 'step' && (
-        <div className="rounded-lg border border-line bg-paper/60 p-4">
+        <div className="rounded-lg border border-white/10 bg-white/[.03] p-4">
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <div className="text-sm font-bold text-ink">جدول پله‌ها</div>
             {k.tiersSample && <span className="inline-flex items-center gap-1 rounded-full bg-saffron-50 px-2 py-0.5 text-xs text-saffron-700"><AlertTriangle size={12} />پله‌های نمونه — شیت «پله های فروش» در اکسل خالی بود</span>}
@@ -103,7 +103,7 @@ export function KpiDetails({ k, s, onChange, readOnly }: { k: KPI; s: Settings; 
           </p>
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {k.tiers.map((t, i) => (
-              <div key={i} className="flex items-center gap-2 rounded-lg bg-white p-2">
+              <div key={i} className="flex items-center gap-2 rounded-lg bg-white/[.04] p-2">
                 <span className="w-6 text-center text-xs text-mute">{i + 1}</span>
                 <span className="text-xs text-mute">از</span>
                 <NumInput value={t.from} onChange={v => up({ tiers: k.tiers.map((x, j) => j === i ? { ...x, from: v ?? 0 } : x), tiersSample: false })} className="!h-8" />
