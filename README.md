@@ -34,6 +34,8 @@
 
 فایل [`release/samane-arzyabi.html`](release/samane-arzyabi.html) را دانلود کنید و با **Chrome** یا **Edge** باز کنید. هیچ نصب یا اتصال اینترنتی لازم نیست.
 
+بسته‌های کامل هر نسخه (فایل اجرایی، راهنمای متنی و کد منبع) در پوشه [`packages/`](packages) است: [`Samane-Arzyabi-v2.rar`](packages/Samane-Arzyabi-v2.rar) و [`Samane-Arzyabi-v1.rar`](packages/Samane-Arzyabi-v1.rar).
+
 > اگر نسخه ۱ را قبلاً در همان مرورگر استفاده کرده‌اید، داده‌هایتان خودکار به واحد «فروش» در ساختار جدید منتقل می‌شود.
 
 ## ورود و نقش‌ها
@@ -145,6 +147,7 @@ npm run build    # بررسی TypeScript و ساخت خروجی تک‌فایل�
 ```
 release/
   samane-arzyabi.html     نسخه ساخته‌شده و آماده اجرا
+packages/                 بسته‌های RAR نسخه ۱ و ۲ (اجرایی + راهنما + کد منبع)
 src/
   App.tsx                 پوسته‌های ورود، نمایش نتایج و پنل مدیریت
   lib/
